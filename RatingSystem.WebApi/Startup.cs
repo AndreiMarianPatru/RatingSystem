@@ -1,5 +1,4 @@
-﻿using Abstractions;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,7 @@ using MediatR.Pipeline;
 using FluentValidation;
 using RatingSystem.WebApi.MediatorPipeline;
 using RatingSystem.WebApi.Middleware;
+using RatingSystem.Data;
 
 namespace RatingSystem.WebApi
 {
@@ -31,18 +31,20 @@ namespace RatingSystem.WebApi
             services.AddMvc(o => o.EnableEndpointRouting = false);
 
             services.Scan(scan => scan
-                .FromAssemblyOf<ListOfAccounts>()
+                .FromAssemblyOf<GetRatingQuery>()
                 .AddClasses(classes => classes.AssignableTo<IValidator>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
             services.AddMediatR(new[] { typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly }); // get all IRequestHandler and INotificationHandler classes
+            services.AddMediatR(new[] { typeof(GetRatingQuery).Assembly, typeof(AllEventsHandler).Assembly }); // get all IRequestHandler and INotificationHandler classes
 
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPostProcessorBehavior<,>));
             services.AddScoped(typeof(IRequestPreProcessor<>), typeof(ValidationPreProcessor<>));
 
             services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(AccountMade).Assembly);
+            services.AddPaymentDataAccess(Configuration);
 
             services.RegisterBusinessServices(Configuration);
             services.AddSwagger(Configuration["Identity:Authority"]);

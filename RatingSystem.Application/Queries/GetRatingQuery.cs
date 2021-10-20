@@ -2,12 +2,13 @@
 using MediatR;
 using RatingSystem.Data;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace RatingSystem.Application.Queries
 {
-    public class ListOfAccounts
+    public class GetRatingQuery
     {
         public class Validator : AbstractValidator<Query>
         {
@@ -23,15 +24,15 @@ namespace RatingSystem.Application.Queries
                 //}).WithMessage("Customer not found");
             }
         }
-       
 
-        public class Query : IRequest<List<Model>>
+
+        public class Query : IRequest<Model>
         {
-            public int? PersonId { get; set; }
-            public string Cnp { get; set; }
+            public int ConferenceId { get; set; }
+            
         }
 
-        public class QueryHandler : IRequestHandler<Query, List<Model>>
+        public class QueryHandler : IRequestHandler<Query, Model>
         {
             private readonly ConferenceDatabaseContext _dbContext;
 
@@ -40,21 +41,29 @@ namespace RatingSystem.Application.Queries
                 _dbContext = dbContext;
             }
 
-            public Task<List<Model>> Handle(Query request, CancellationToken cancellationToken)
+          
+
+            public Task<Model> Handle(Query request, CancellationToken cancellationToken)
             {
-                return null;
+                var conference = _dbContext.Ratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
+                var db = _dbContext.Ratings.Where(x => x.ConferenceId == conference.ConferenceId);
+                var result = db.Select(x => x.RatingValue).ToArray();
+                
+                Model averagedRating = new Model();
+                averagedRating.ConferenceId = conference.ConferenceId;
+                averagedRating.Rating = (decimal)result.Average();
+
+                return Task.FromResult(averagedRating);
+               
             }
+
+           
         }
-   
+
         public class Model
         {
-            public int Id { get; set; }
-            public decimal Balance { get; set; }
-            public string Currency { get; set; }
-            public string Iban { get; set; }
-            public string Status { get; set; }
-            public decimal? Limit { get; set; }
-            public string Type { get; set; }
+            public int ConferenceId { get; set; }
+            public decimal Rating { get; set; }
         }
     }
 }

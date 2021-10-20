@@ -8,11 +8,9 @@ using RatingSystem.Application.Queries;
 using RatingSystem.Application.Services;
 using RatingSystem.Data;
 using RatingSystem.ExternalService;
-using RatingSystem.Models;
 using RatingSystem.PublishedLanguage.Commands;
 using RatingSystem.PublishedLanguage.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +42,11 @@ namespace RatingSystem
                 .AddClasses(classes => classes.AssignableTo<IValidator>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+            services.Scan(scan => scan
+               .FromAssemblyOf<GetRatingQuery>()
+               .AddClasses(classes => classes.AssignableTo<IValidator>())
+               .AsImplementedInterfaces()
+               .WithScopedLifetime());
 
 
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
@@ -52,6 +55,7 @@ namespace RatingSystem
 
             services.AddScopedContravariant<INotificationHandler<INotification>, AllEventsHandler>(typeof(AccountMade).Assembly);
 
+            services.AddMediatR(new[] { typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly }); // get all IRequestHandler and INotificationHandler classes
             services.AddMediatR(new[] { typeof(ListOfAccounts).Assembly, typeof(AllEventsHandler).Assembly }); // get all IRequestHandler and INotificationHandler classes
 
             services.AddSingleton(Configuration);
@@ -75,12 +79,17 @@ namespace RatingSystem
 
 
 
-            var query = new Application.Queries.ListOfAccounts.Query
+            var query2 = new Application.Queries.ListOfAccounts.Query
             {
                 PersonId = 2
             };
 
-           // var result = await mediator.Send(query, cancellationToken);
+            var query = new Application.Queries.GetRatingQuery.Query
+            {
+                ConferenceId = 10
+            };
+
+             var result = await mediator.Send(query, cancellationToken);
 
 
         }

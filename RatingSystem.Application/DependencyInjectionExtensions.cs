@@ -1,9 +1,6 @@
-﻿using Abstractions;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RatingSystem.Application.Services;
-using RatingSystem.Application.WriteOperations;
-using static RatingSystem.Application.Queries.ListOfAccounts;
 
 namespace RatingSystem.Application
 {

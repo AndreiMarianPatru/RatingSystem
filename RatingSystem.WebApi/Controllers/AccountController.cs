@@ -35,5 +35,16 @@ namespace RatingSystem.WebApi.Controllers
             var result = await _mediator.Send(query, cancellationToken);
             return result;
         }
+
+        [HttpGet]
+        [Route("GetRatings")]
+        // query: http://localhost:5000/api/Account/ListOfAccounts?PersonId=1&Cnp=1961231..
+        // route: http://localhost:5000/api/Account/ListOfAccounts/1/1961231..
+        public async Task<GetRatingQuery.Model> GetRatings([FromQuery] GetRatingQuery.Query query, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+            return result;
+        }
+
     }
 }

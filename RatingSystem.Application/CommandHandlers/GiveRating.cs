@@ -1,11 +1,7 @@
 ﻿using MediatR;
-using RatingSystem.Application.Services;
 using RatingSystem.Data;
 using RatingSystem.Models;
 using RatingSystem.PublishedLanguage.Commands;
-using RatingSystem.PublishedLanguage.Events;
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +26,7 @@ namespace RatingSystem.Application.WriteOperations
         {
             Rating rating = new Rating();
             rating.ConferenceId = 10;
-            rating.RatingValue = 3;
+            rating.RatingValue = 4;
             _dbContext.Ratings.Add(rating);
             _dbContext.SaveChanges();
             // TODO: implement logic

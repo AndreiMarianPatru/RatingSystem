@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using RatingSystem.PublishedLanguage.Commands;
-using RatingSystem.PublishedLanguage.Events;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
