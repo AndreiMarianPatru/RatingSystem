@@ -45,13 +45,20 @@ namespace RatingSystem.Application.Queries
 
             public Task<Model> Handle(Query request, CancellationToken cancellationToken)
             {
-                var conference = _dbContext.ConferenceXratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
-                var db = _dbContext.ConferenceXratings.Where(x => x.ConferenceId == conference.ConferenceId);
-                var rating = db.Select(x => x.RatingValue).ToArray();
-                
-                Model result = new Model();
-                result.ConferenceId = conference.ConferenceId;
-                result.Rating = rating[0];
+                var conference = _dbContext.ConferenceXratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId && x.RatingValue.HasValue);
+                if (conference == null)
+                {
+                    return Task.FromResult(new Model
+                    {
+                        ConferenceId = request.ConferenceId,
+                        Rating = 0
+                    });
+                }
+                var result = new Model
+                {
+                    ConferenceId = request.ConferenceId,
+                    Rating = conference.RatingValue
+                };
 
                 return Task.FromResult(result);
                
