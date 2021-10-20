@@ -45,15 +45,15 @@ namespace RatingSystem.Application.Queries
 
             public Task<Model> Handle(Query request, CancellationToken cancellationToken)
             {
-                var conference = _dbContext.Ratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
-                var db = _dbContext.Ratings.Where(x => x.ConferenceId == conference.ConferenceId);
-                var result = db.Select(x => x.RatingValue).ToArray();
+                var conference = _dbContext.ConferenceXratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
+                var db = _dbContext.ConferenceXratings.Where(x => x.ConferenceId == conference.ConferenceId);
+                var rating = db.Select(x => x.RatingValue).ToArray();
                 
-                Model averagedRating = new Model();
-                averagedRating.ConferenceId = conference.ConferenceId;
-                averagedRating.Rating = (decimal)result.Average();
+                Model result = new Model();
+                result.ConferenceId = conference.ConferenceId;
+                result.Rating = rating[0];
 
-                return Task.FromResult(averagedRating);
+                return Task.FromResult(result);
                
             }
 
@@ -63,7 +63,7 @@ namespace RatingSystem.Application.Queries
         public class Model
         {
             public int ConferenceId { get; set; }
-            public decimal Rating { get; set; }
+            public decimal? Rating { get; set; }
         }
     }
 }

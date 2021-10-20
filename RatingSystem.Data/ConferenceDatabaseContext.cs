@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using RatingSystem.Models;
 
 #nullable disable
@@ -7,13 +9,16 @@ namespace RatingSystem.Data
 {
     public partial class ConferenceDatabaseContext : DbContext
     {
-       
+        public ConferenceDatabaseContext()
+        {
+        }
 
         public ConferenceDatabaseContext(DbContextOptions<ConferenceDatabaseContext> options)
             : base(options)
         {
         }
 
+        public virtual DbSet<ConferenceXrating> ConferenceXratings { get; set; }
         public virtual DbSet<Rating> Ratings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -29,9 +34,19 @@ namespace RatingSystem.Data
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
+            modelBuilder.Entity<ConferenceXrating>(entity =>
+            {
+                entity.ToTable("ConferenceXrating");
+
+                entity.Property(e => e.RatingValue).HasColumnType("decimal(10, 2)");
+            });
+
             modelBuilder.Entity<Rating>(entity =>
             {
-                entity.Property(e => e.RatingValue).HasColumnName("Rating");
+                entity.Property(e => e.UserEmail)
+                    .HasMaxLength(100)
+                    .HasColumnName("userEmail")
+                    .IsFixedLength(true);
             });
 
             OnModelCreatingPartial(modelBuilder);

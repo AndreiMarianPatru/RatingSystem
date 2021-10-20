@@ -5,11 +5,10 @@ using System.Collections.Generic;
 
 namespace RatingSystem.Models
 {
-    public partial class Rating
+    public partial class ConferenceXrating
     {
         public int Id { get; set; }
         public int ConferenceId { get; set; }
-        public int RatingValue { get; set; }
-        public string UserEmail { get; set; }
+        public decimal? RatingValue { get; set; }
     }
 }
