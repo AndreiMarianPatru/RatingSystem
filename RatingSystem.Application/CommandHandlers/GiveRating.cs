@@ -26,24 +26,31 @@ namespace RatingSystem.Application.WriteOperations
         public async Task<Unit> Handle(MakeNewRating request, CancellationToken cancellationToken)
         {
             var conference = _dbContext.Ratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
-            var db = _dbContext.Ratings.FirstOrDefault(x => x.ConferenceId == conference.ConferenceId);
-            if (db == null)
+            if (conference == null || 
+                _dbContext.Ratings.Where(x=> x.UserEmail==request.userEmail).Count()==0)
             {
-                db = new Rating
+                var db = new Rating
                 {
                     ConferenceId = request.ConferenceId,
-                    RatingValue = request.RatingValue
+                    RatingValue = request.RatingValue,
+                    UserEmail = request.userEmail
+
+
                 };
                 _dbContext.Ratings.Add(db);
                 _dbContext.SaveChanges();
             }
-            var ratings = _dbContext.Ratings.Select(x => x.RatingValue).ToArray();
+
+
+
+            var ratings = _dbContext.Ratings.Where(x => x.ConferenceId == request.ConferenceId).Select(x => x.RatingValue);
+            //var ratings = _dbContext.Ratings.Select(x => x.RatingValue).ToArray();
             var result = (decimal)ratings.Average();
             var conferencedX = _dbContext.ConferenceXratings.FirstOrDefault(x => x.ConferenceId == request.ConferenceId);
             if (conferencedX == null)
             {
                 ConferenceXrating cxr = new ConferenceXrating();
-                cxr.ConferenceId = conference.ConferenceId;
+                cxr.ConferenceId = request.ConferenceId;
                 cxr.RatingValue = result;
                 _dbContext.ConferenceXratings.Add(cxr);
             }

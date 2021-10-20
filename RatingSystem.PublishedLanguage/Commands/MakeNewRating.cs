@@ -6,6 +6,8 @@ namespace RatingSystem.PublishedLanguage.Commands
     {
         public int RatingValue { get; set; }
         public int ConferenceId { get; set; }
-       
+
+        public string userEmail { get; set; }
+
     }
 }

@@ -45,7 +45,7 @@ namespace RatingSystem.Data
             {
                 entity.Property(e => e.UserEmail)
                     .HasMaxLength(100)
-                    .HasColumnName("userEmail")
+                    .HasColumnName("UserEmail")
                     .IsFixedLength(true);
             });
 
